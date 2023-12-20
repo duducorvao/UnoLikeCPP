@@ -1,0 +1,106 @@
+﻿@startuml
+'https://plantuml.com/class-diagram
+
+class GameController {
+- table_controller : shared_ptr<TableController>
+- turn_controller : shared_ptr<TurnsController>
+
++ Initialize() : void
++ SetupGame() : void
++ SetupPlayers() : void
++ StartGame(): void
+}
+
+class TableController{
+- deck : vector<shared_ptr<Card>>
+- discard : vector<shared_ptr<Card>>
+- card_factory : shared_ptr<CardFactory>
+
++ Initialize() : void
++ SetupTable() : void
++ CreateCards() : void
++ ShuffleDeck() : void
++ ValidateCard(shared_ptr<Card>) : bool
++ PlayCard(shared_ptr<Card>) : void
++ BuyCards(int amount) : vector<shared_ptr<Card>
+}
+
+class TurnsController{
+- play_order : EPlayOrder
+- players : vector<shared_ptr<Player>>
+- current_player : shared_ptr<Player>
+
++ Initialize(vector<shared_ptr<Player>> players) : void
++ SetupTurns() : void
++ NextTurn() : void
++ ShufflePlayers() : void
++ GetPlayers() : vector<shared_ptr<Player>>
++ SetOrder(PlayOrder) : void
+}
+
+class Player{
+- can_say_uno : bool
+- has_said_uno : bool
+- Hand : vector<shared_ptr<Card>>
+
++ SetHand(vector<shared_ptr<Card>) : void
+}
+
+class CardFactory{
++ MakeCard(ECardType card_type): shared_ptr<Card>
+}
+
+abstract Card{
+- card_color : ECardColor
+- card_type : ECardType
+- use_condition : UseCondition
+- action : Action
+}
+
+class NumberCard extends Card{
+}
+
+class PlusTwoCard extends Card{
+}
+
+class ReverseCard extends Card{
+}
+
+class JumpCard extends Card{
+}
+
+enum ECardColor {
+kBlue
+kYellow
+KRed
+KGreen
+}
+
+enum ECardType {
+number
+plusTwo
+reverse
+jump
+}
+
+enum EPlayOrder{
+kClockwise
+kAnticlockwise
+}
+
+GameController -- TableController
+GameController -- TurnsController
+
+TableController -- CardFactory
+
+TurnsController -- EPlayOrder
+TurnsController -- Player
+
+Card -> ECardColor
+ECardType <- Card
+
+Player -- Card
+
+CardFactory -- Card
+
+@enduml
