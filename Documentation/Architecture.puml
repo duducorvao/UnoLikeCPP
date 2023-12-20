@@ -2,8 +2,8 @@
 'https://plantuml.com/class-diagram
 
 class GameController {
-- table_controller : shared_ptr<TableController>
-- turn_controller : shared_ptr<TurnsController>
+- table_controller : unique_ptr<TableController>
+- turn_controller : unique_ptr<TurnsController>
 
 + Initialize() : void
 + SetupGame() : void
@@ -12,15 +12,16 @@ class GameController {
 }
 
 class TableController{
-- deck : vector<shared_ptr<Card>>
-- discard : vector<shared_ptr<Card>>
-- card_factory : shared_ptr<CardFactory>
+- deck : vector<weak_ptr<Card>>
+- discard : vector<weak_ptr<Card>>
+- card_factory : unique_ptr<CardFactory>
+- card_pool: vector<unique_ptr<Card>>
 
 + Initialize() : void
 + SetupTable() : void
 + CreateCards() : void
 + ShuffleDeck() : void
-+ ValidateCard(shared_ptr<Card>) : bool
++ ValidateCard(weak_ptr<Card>) : bool
 + PlayCard(shared_ptr<Card>) : void
 + BuyCards(int amount) : vector<shared_ptr<Card>
 }
