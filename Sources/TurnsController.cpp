@@ -1,1 +1,51 @@
-﻿#include "../Headers/TurnsController.h"
+﻿#include <algorithm>
+#include <chrono>
+#include <random>
+#include "../Headers/TurnsController.h"
+#include "../Headers/GameConsole.h"
+#include "../Headers/Player.h"
+
+void TurnsController::Initialize(std::vector<std::shared_ptr<Player>> players)
+{
+    players_ = std::move(players);
+    players_amount_ = players_.size();
+}
+
+void TurnsController::SetupTurns()
+{
+    ShufflePlayers();
+    current_player = *players_.begin();
+}
+
+void TurnsController::PlayTurn()
+{
+    current_player->Play();
+}
+
+void TurnsController::NextTurn()
+{
+    NextPlayer();
+}
+
+void TurnsController::NextPlayer()
+{
+    int direction;
+    play_order_ == EPlayOrder::Clockwise ? direction = 1 : direction = -1;
+    current_player_index_ = (current_player_index_ + direction) % players_amount_;
+}
+
+void TurnsController::ShufflePlayers()
+{
+    const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(players_.begin(), players_.end(), std::default_random_engine(seed));
+}
+
+void TurnsController::SetOrder(EPlayOrder order)
+{
+    play_order_ = order;
+}
+
+const std::vector<std::shared_ptr<Player>>& TurnsController::GetPlayers()
+{
+    return this->players_;
+}
