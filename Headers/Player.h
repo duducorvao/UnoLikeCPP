@@ -9,13 +9,14 @@ class Player
 {
     
 public:
-    Player(std::wstring name);
+    Player(std::string name);
+    void Play();
     void SetHand(const std::vector<std::weak_ptr<Card>>& cards);
-    std::wstring GetName() const;
+    const std::string& GetName() const;
     void PrintCards() const;
     
 private:
-    std::wstring name_;
+    std::string name_;
     bool can_say_uno_ = false;
     bool has_said_uno_ = false;
 

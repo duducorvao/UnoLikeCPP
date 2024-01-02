@@ -1,15 +1,16 @@
 ﻿#pragma once
 #include <iostream>
-#include <string_view>
 
 class GameConsole
 {
 public:
-    static void Print(std::string_view message);
-    static void PrintLine(std::string_view message);
+    static void Print(const std::string& message);
+    static void PrintLine(const std::string& message);
+    static void PrintErr(const std::string& message);
+    static void SetColor(const std::string& color);
 
     template<typename T>
-    static T Read(std::string_view message)
+    static T Read(const std::string& message = "")
     {
         T readData;
         std::cout << message;

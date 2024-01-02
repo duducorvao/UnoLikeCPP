@@ -1,7 +1,12 @@
 ﻿#include "../Headers/Player.h"
 
-Player::Player(std::wstring name) : name_(std::move(name))
+Player::Player(std::string name) : name_(std::move(name))
 {
+}
+
+void Player::Play()
+{
+    
 }
 
 void Player::SetHand(const std::vector<std::weak_ptr<Card>>& cards)
@@ -9,7 +14,7 @@ void Player::SetHand(const std::vector<std::weak_ptr<Card>>& cards)
     hand_ = cards;
 }
 
-std::wstring Player::GetName() const
+const std::string& Player::GetName() const
 {
     return name_;
 }

@@ -283,6 +283,7 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Sources\GameConsole.cpp" />
     <ClCompile Include="Sources\GameController.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -661,6 +662,8 @@
   <ItemGroup>
     <ClInclude Include="Headers\Card.h" />
     <ClInclude Include="Headers\CardFactory.h" />
+    <ClInclude Include="Headers\Config.h" />
+    <ClInclude Include="Headers\GameConsole.h" />
     <ClInclude Include="Headers\GameController.h" />
     <ClInclude Include="Headers\NumberCard.h" />
     <ClInclude Include="Headers\Player.h" />
