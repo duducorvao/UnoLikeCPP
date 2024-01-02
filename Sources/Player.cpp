@@ -14,7 +14,7 @@ void Player::SetHand(const std::vector<std::weak_ptr<Card>>& cards)
     hand_ = cards;
 }
 
-std::string Player::GetName() const
+const std::string& Player::GetName() const
 {
     return name_;
 }

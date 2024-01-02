@@ -2,8 +2,9 @@
 #include <chrono>
 #include <random>
 #include "../Headers/TurnsController.h"
-#include "../Headers/GameConsole.h"
 #include "../Headers/Player.h"
+
+#define mod_arith(a, n) ((a % n) + n) % n
 
 void TurnsController::Initialize(std::vector<std::shared_ptr<Player>> players)
 {
@@ -31,7 +32,7 @@ void TurnsController::NextPlayer()
 {
     int direction;
     play_order_ == EPlayOrder::Clockwise ? direction = 1 : direction = -1;
-    current_player_index_ = (current_player_index_ + direction) % players_amount_;
+    current_player_index_ = mod_arith((current_player_index_ + direction), players_amount_);
 }
 
 void TurnsController::ShufflePlayers()

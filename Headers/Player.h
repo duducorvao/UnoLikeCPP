@@ -12,7 +12,7 @@ public:
     Player(std::string name);
     void Play();
     void SetHand(const std::vector<std::weak_ptr<Card>>& cards);
-    std::string GetName() const;
+    const std::string& GetName() const;
     void PrintCards() const;
     
 private:
