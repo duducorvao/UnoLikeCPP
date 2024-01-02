@@ -9,7 +9,7 @@ void Player::Play()
     
 }
 
-void Player::SetHand(const std::vector<std::weak_ptr<Card>>& cards)
+void Player::SetHand(const std::vector<std::shared_ptr<Card>>& cards)
 {
     hand_ = cards;
 }
