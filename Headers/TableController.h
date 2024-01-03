@@ -1,8 +1,7 @@
 ﻿#pragma once
+#include "CardFactory.h"
 #include <memory>
 #include <vector>
-
-#include "CardFactory.h"
 
 class TableController
 {

@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <memory>
 #include "Card.h"
+#include <memory>
 
 class CardFactory
 {

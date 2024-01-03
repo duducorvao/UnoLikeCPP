@@ -12,6 +12,11 @@ void GameConsole::PrintLine(const std::string& message)
     std::cout << '\n';
 }
 
+void GameConsole::PrintLine()
+{
+    std::cout << '\n';
+}
+
 void GameConsole::PrintErr(const std::string& message)
 {
     SetColor(Config::CONSOLE_ERROR_COLOR);

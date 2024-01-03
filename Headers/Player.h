@@ -13,7 +13,7 @@ public:
     void Play();
     void SetHand(const std::vector<std::shared_ptr<Card>>& cards);
     const std::string& GetName() const;
-    void PrintCards() const;
+    void PrintHand() const;
     
 private:
     std::string name_;

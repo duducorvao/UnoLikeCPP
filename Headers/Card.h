@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <string>
 
 class Card
 {
@@ -41,12 +42,24 @@ public:
     Card(ECardColor card_color, ECardType card_type);
     ECardColor GetCardColor() const;
     ECardType GetCardType() const;
-    
-protected:
-    ECardColor card_color_ {ECardColor::Blue};
-    ECardType card_type_  {ECardType::Number};
 
     virtual bool CheckUseCondition() = 0;
     virtual void OnPlaceAction() = 0;
     virtual void OnRoundBeginAction() = 0;
+
+    std::string GetCardViewName();
+    std::string GetCardTopSection() const;
+    std::string GetCardEmptySection() const;
+    std::string GetCardNameSection() const;
+    std::string GetCardBotSection() const;
+    void CalculateCardSize();
+    
+    std::string GetCardViewColor() const;
+    
+protected:
+    ECardColor card_color_ {ECardColor::Blue};
+    ECardType card_type_  {ECardType::Number};
+    
+    std::string view_name_;
+    size_t card_internal_size_ {0};
 };

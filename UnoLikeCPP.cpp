@@ -7,6 +7,3 @@ int main()
     game_controller.Play();
     return 0;
 }
-
-
-

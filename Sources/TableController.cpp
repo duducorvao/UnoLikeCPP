@@ -1,10 +1,8 @@
 ﻿#include "../Headers/TableController.h"
-
+#include "../Headers/Config.h"
 #include <algorithm>
 #include <chrono>
 #include <random>
-
-#include "../Headers/Config.h"
 
 void TableController::Initialize()
 {

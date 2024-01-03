@@ -6,6 +6,7 @@ class GameConsole
 public:
     static void Print(const std::string& message);
     static void PrintLine(const std::string& message);
+    static void PrintLine();
     static void PrintErr(const std::string& message);
     static void SetColor(const std::string& color);
 

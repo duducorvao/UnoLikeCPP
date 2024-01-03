@@ -18,7 +18,7 @@ void TurnsController::SetupTurns()
     current_player = *players_.begin();
 }
 
-void TurnsController::PlayTurn()
+void TurnsController::PlayTurn() const
 {
     current_player->Play();
 }

@@ -10,19 +10,19 @@ void GameController::Initialize()
     turns_controller_ = std::make_unique<TurnsController>();
 }
 
-void GameController::Play()
+void GameController::Play() const
 {
     GameConsole::PrintLine("Welcome to the UNO Game");
     SetupGame();
 }
 
-void GameController::SetupGame()
+void GameController::SetupGame() const
 {
     SetupCards();
     SetupPlayers();
 }
 
-void GameController::SetupPlayers()
+void GameController::SetupPlayers() const
 {
     int players_amount;
     do
@@ -52,7 +52,7 @@ void GameController::SetupPlayers()
     turns_controller_->SetupTurns();
 }
 
-void GameController::SetupCards()
+void GameController::SetupCards() const
 {
     table_controller_->Initialize();
     table_controller_->SetupTable();
