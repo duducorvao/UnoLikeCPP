@@ -18,8 +18,8 @@ void GameController::Play()
 
 void GameController::SetupGame()
 {
-    SetupPlayers();
     SetupCards();
+    SetupPlayers();
 }
 
 void GameController::SetupPlayers()
@@ -30,8 +30,7 @@ void GameController::SetupPlayers()
         std::ostringstream oss;
         oss << "Choose how many players will play (";
         oss << Config::PLAYERS_MIN_AMOUNT << " - " << Config::PLAYERS_MAX_AMOUNT << "): ";
-    
-        //GameConsole::Print(oss.str());
+        
         players_amount = GameConsole::Read<int>(oss.str());
     }
     while (players_amount < Config::PLAYERS_MIN_AMOUNT || players_amount > Config::PLAYERS_MAX_AMOUNT);
@@ -45,6 +44,8 @@ void GameController::SetupPlayers()
 
         std::shared_ptr<Player> new_player = std::make_shared<Player>(name);
         players.emplace_back(new_player);
+
+        new_player->SetHand(table_controller_->BuyCards(Config::PLAYERS_HAND_SIZE));
     }
 
     turns_controller_->Initialize(players);
@@ -53,6 +54,7 @@ void GameController::SetupPlayers()
 
 void GameController::SetupCards()
 {
+    table_controller_->Initialize();
     table_controller_->SetupTable();
 }
 

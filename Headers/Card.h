@@ -12,6 +12,14 @@ public:
         Green
     };
 
+    static constexpr ECardColor card_color_list[]
+    {
+        ECardColor::Blue,
+        ECardColor::Yellow,
+        ECardColor::Red,
+        ECardColor::Green
+    };
+
     enum class ECardType
     {
         Number,
@@ -20,8 +28,17 @@ public:
         Jump
     };
 
+    static constexpr ECardType card_type_list[]
+    {
+        ECardType::Number,
+        ECardType::PlusTwo,
+        ECardType::Reverse,
+        ECardType::Jump
+    };
+
     Card() = default;
     virtual ~Card() = default;
+    Card(ECardColor card_color, ECardType card_type);
     ECardColor GetCardColor() const;
     ECardType GetCardType() const;
     

@@ -11,7 +11,7 @@ class Player
 public:
     Player(std::string name);
     void Play();
-    void SetHand(const std::vector<std::weak_ptr<Card>>& cards);
+    void SetHand(const std::vector<std::shared_ptr<Card>>& cards);
     const std::string& GetName() const;
     void PrintCards() const;
     
@@ -20,5 +20,5 @@ private:
     bool can_say_uno_ = false;
     bool has_said_uno_ = false;
 
-    std::vector<std::weak_ptr<Card>> hand_;
+    std::vector<std::shared_ptr<Card>> hand_;
 };
