@@ -6,13 +6,13 @@
 class GameController
 {
 private:
-    std::unique_ptr<TableController> table_controller_;
-    std::unique_ptr<TurnsController> turns_controller_;
+    std::shared_ptr<TableController> table_controller_;
+    std::shared_ptr<TurnsController> turns_controller_;
     
     void SetupGame() const;
-    void SetupPlayers() const;
     void SetupCards() const;
-    void StartGame();
+    void SetupPlayers() const;
+    void StartGame() const;
 
 public:
     GameController() = default;

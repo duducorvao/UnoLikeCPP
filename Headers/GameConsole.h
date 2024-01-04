@@ -8,7 +8,11 @@ public:
     static void PrintLine(const std::string& message);
     static void PrintLine();
     static void PrintErr(const std::string& message);
+    static void PrintWarn(const std::string& message);
     static void SetColor(const std::string& color);
+    static void WaitForAnyInput(const std::string& message);
+    static void WaitForAnyInput();
+    static void ClearScreen();
 
     template<typename T>
     static T Read(const std::string& message = "")

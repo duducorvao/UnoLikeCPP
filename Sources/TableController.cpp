@@ -4,6 +4,8 @@
 #include <chrono>
 #include <random>
 
+#include "../Headers/GameConsole.h"
+
 void TableController::Initialize()
 {
     //Stub method for possible later use
@@ -59,12 +61,7 @@ std::vector<std::shared_ptr<Card>> TableController::BuyCards(unsigned int amount
 {
     if (amount > deck_.size())
     {
-        const std::shared_ptr<Card> top_card = discard_.front();
-        discard_.erase(discard_.begin());
-        deck_ = std::move(discard_);
-        ShuffleDeck();
-
-        deck_.insert(deck_.begin(), top_card);
+        RecycleCards();
     }
 
     std::vector<std::shared_ptr<Card>> draw_cards;
@@ -77,4 +74,25 @@ std::vector<std::shared_ptr<Card>> TableController::BuyCards(unsigned int amount
     }
     
     return draw_cards;
+}
+
+void TableController::RecycleCards()
+{
+    const std::shared_ptr<Card> top_card = discard_.front();
+    discard_.erase(discard_.begin());
+    deck_ = std::move(discard_);
+    ShuffleDeck();
+
+    deck_.insert(deck_.begin(), top_card);
+}
+
+std::weak_ptr<Card> TableController::GetTopCard() const
+{
+    return discard_.front();
+}
+
+void TableController::PrintTopCard() const
+{
+    GameConsole::PrintLine("This is the current top card:");
+    GameConsole::Print(discard_.front()->GetFullCardImage());
 }

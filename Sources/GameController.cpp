@@ -6,20 +6,27 @@
 
 void GameController::Initialize()
 {
-    table_controller_ = std::make_unique<TableController>();
-    turns_controller_ = std::make_unique<TurnsController>();
+    table_controller_ = std::make_shared<TableController>();
+    turns_controller_ = std::make_shared<TurnsController>();
 }
 
 void GameController::Play() const
 {
     GameConsole::PrintLine("Welcome to the UNO Game");
     SetupGame();
+    StartGame();
 }
 
 void GameController::SetupGame() const
 {
     SetupCards();
     SetupPlayers();
+}
+
+void GameController::SetupCards() const
+{
+    table_controller_->Initialize();
+    table_controller_->SetupTable();
 }
 
 void GameController::SetupPlayers() const
@@ -48,16 +55,11 @@ void GameController::SetupPlayers() const
         new_player->SetHand(table_controller_->BuyCards(Config::PLAYERS_HAND_SIZE));
     }
 
-    turns_controller_->Initialize(players);
-    turns_controller_->SetupTurns();
+    turns_controller_->Initialize(table_controller_);
+    turns_controller_->SetupTurns(players);
 }
 
-void GameController::SetupCards() const
+void GameController::StartGame() const
 {
-    table_controller_->Initialize();
-    table_controller_->SetupTable();
-}
-
-void GameController::StartGame()
-{
+    turns_controller_->PlayTurn();
 }
