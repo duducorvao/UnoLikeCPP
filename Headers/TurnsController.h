@@ -15,7 +15,7 @@ public:
     
     void Initialize(std::vector<std::shared_ptr<Player>> players);
     void SetupTurns();
-    void PlayTurn();
+    void PlayTurn() const;
     void NextTurn();
     void NextPlayer();
     void ShufflePlayers();
