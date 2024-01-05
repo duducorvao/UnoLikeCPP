@@ -31,12 +31,13 @@ void TableController::CreateCards()
             }
         }
 
-        for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
-        {
-            card_pool_.emplace_back(card_factory_->MakeCardPlusTwo(element));
-            card_pool_.emplace_back(card_factory_->MakeCardReverse(element));
-            card_pool_.emplace_back(card_factory_->MakeCardJump(element));
-        }        
+        // Disabling special cards for testing purposes
+        // for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
+        // {
+        //     card_pool_.emplace_back(card_factory_->MakeCardPlusTwo(element));
+        //     card_pool_.emplace_back(card_factory_->MakeCardReverse(element));
+        //     card_pool_.emplace_back(card_factory_->MakeCardJump(element));
+        // }    
     }
 }
 
@@ -55,6 +56,11 @@ void TableController::DrawFirstCard()
 {
     discard_.insert(discard_.begin(), deck_.front());
     deck_.erase(deck_.begin());
+}
+
+void TableController::PlaceCard(const std::shared_ptr<Card>& card)
+{
+    discard_.insert(discard_.begin(), card);
 }
 
 std::vector<std::shared_ptr<Card>> TableController::BuyCards(unsigned int amount)

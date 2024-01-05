@@ -20,6 +20,7 @@ public:
     void CreateDeck();
     void ShuffleDeck();
     void DrawFirstCard();
+    void PlaceCard(const std::shared_ptr<Card>& card);
     std::vector<std::shared_ptr<Card>> BuyCards(unsigned int amount);
     std::weak_ptr<Card> GetTopCard() const;
     void PrintTopCard() const;

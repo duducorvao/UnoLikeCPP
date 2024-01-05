@@ -7,14 +7,15 @@
 void GameController::Initialize()
 {
     table_controller_ = std::make_shared<TableController>();
-    turns_controller_ = std::make_shared<TurnsController>();
+    turns_controller_ = std::make_shared<TurnsController>(shared_from_this());
 }
 
-void GameController::Play() const
+void GameController::Play()
 {
     GameConsole::PrintLine("Welcome to the UNO Game");
     SetupGame();
-    StartGame();
+    is_playing_ = true;
+    GameLoop();
 }
 
 void GameController::SetupGame() const
@@ -59,7 +60,16 @@ void GameController::SetupPlayers() const
     turns_controller_->SetupTurns(players);
 }
 
-void GameController::StartGame() const
+void GameController::GameLoop() const
 {
-    turns_controller_->PlayTurn();
+    while (is_playing_)
+    {
+        turns_controller_->PlayTurn();
+        turns_controller_->NextPlayer();
+    }
+}
+
+void GameController::EndGame()
+{
+    is_playing_ = false;
 }

@@ -49,6 +49,7 @@ void GameConsole::ClearScreen()
 void GameConsole::WaitForAnyInput(const std::string& message)
 {
     std::cout << message;
+    std::cin.clear();
     std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
     std::cin.get();
 }

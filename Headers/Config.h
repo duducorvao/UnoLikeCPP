@@ -5,7 +5,9 @@ class Config
 public:
     static constexpr int PLAYERS_MIN_AMOUNT {2};
     static constexpr int PLAYERS_MAX_AMOUNT {10};
-    static constexpr int PLAYERS_HAND_SIZE {7};
+    static constexpr int PLAYERS_HAND_SIZE {2};
+    static constexpr int PLAYERS_HAND_SIZE_TO_SAY_UNO {2};
+    static constexpr int YELL_UNO_PENALTY_CARDS {2};
 
     static constexpr int CARDS_NUMBER_TOTAL {80};
     static constexpr int CARDS_PLUS_TWO_TOTAL {8};
