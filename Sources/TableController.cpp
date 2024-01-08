@@ -4,6 +4,8 @@
 #include <chrono>
 #include <random>
 
+#include "../Headers/GameConsole.h"
+
 void TableController::Initialize()
 {
     //Stub method for possible later use
@@ -29,12 +31,13 @@ void TableController::CreateCards()
             }
         }
 
-        for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
-        {
-            card_pool_.emplace_back(card_factory_->MakeCardPlusTwo(element));
-            card_pool_.emplace_back(card_factory_->MakeCardReverse(element));
-            card_pool_.emplace_back(card_factory_->MakeCardJump(element));
-        }        
+        // Disabling special cards for testing purposes
+        // for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
+        // {
+        //     card_pool_.emplace_back(card_factory_->MakeCardPlusTwo(element));
+        //     card_pool_.emplace_back(card_factory_->MakeCardReverse(element));
+        //     card_pool_.emplace_back(card_factory_->MakeCardJump(element));
+        // }    
     }
 }
 
@@ -55,16 +58,16 @@ void TableController::DrawFirstCard()
     deck_.erase(deck_.begin());
 }
 
+void TableController::PlaceCard(const std::shared_ptr<Card>& card)
+{
+    discard_.insert(discard_.begin(), card);
+}
+
 std::vector<std::shared_ptr<Card>> TableController::BuyCards(unsigned int amount)
 {
     if (amount > deck_.size())
     {
-        const std::shared_ptr<Card> top_card = discard_.front();
-        discard_.erase(discard_.begin());
-        deck_ = std::move(discard_);
-        ShuffleDeck();
-
-        deck_.insert(deck_.begin(), top_card);
+        RecycleCards();
     }
 
     std::vector<std::shared_ptr<Card>> draw_cards;
@@ -77,4 +80,25 @@ std::vector<std::shared_ptr<Card>> TableController::BuyCards(unsigned int amount
     }
     
     return draw_cards;
+}
+
+void TableController::RecycleCards()
+{
+    const std::shared_ptr<Card> top_card = discard_.front();
+    discard_.erase(discard_.begin());
+    deck_ = std::move(discard_);
+    ShuffleDeck();
+
+    deck_.insert(deck_.begin(), top_card);
+}
+
+std::weak_ptr<Card> TableController::GetTopCard() const
+{
+    return discard_.front();
+}
+
+void TableController::PrintTopCard() const
+{
+    GameConsole::PrintLine("This is the current top card:");
+    GameConsole::Print(discard_.front()->GetFullCardImage());
 }

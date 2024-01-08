@@ -6,6 +6,8 @@ public:
     static constexpr int PLAYERS_MIN_AMOUNT {2};
     static constexpr int PLAYERS_MAX_AMOUNT {10};
     static constexpr int PLAYERS_HAND_SIZE {7};
+    static constexpr int PLAYERS_HAND_SIZE_TO_SAY_UNO {2};
+    static constexpr int YELL_UNO_PENALTY_CARDS {2};
 
     static constexpr int CARDS_NUMBER_TOTAL {80};
     static constexpr int CARDS_PLUS_TWO_TOTAL {8};
@@ -22,6 +24,7 @@ public:
     static constexpr char CARD_GREEN_COLOR[] = "\033[92m";
     static constexpr char CONSOLE_NORMAL_COLOR[] = "\033[0m";
     static constexpr char CONSOLE_ERROR_COLOR[] = "\033[31m";
+    static constexpr char CONSOLE_WARNING_COLOR[] = "\033[33m";
 
     // Card ASCII
     static constexpr size_t CARD_MIN_WIDTH {9};
@@ -32,5 +35,12 @@ public:
     static constexpr char CARD_TOP_RIGHT_CORNER {'\xbb'};   // ╗
     static constexpr char CARD_BOT_LEFT_CORNER {'\xc8'};    // ╚
     static constexpr char CARD_BOT_RIGHT_CORNER {'\xbc'};   // ╝
-    static constexpr char CARD_EMPTY_SPACE {'\xb0'};        // ░
+    
+#ifndef __DEBUG
+    static constexpr char CARD_BACKGROUND_SPACE {'\xb0'};   // ░
+#else
+    static constexpr char CARD_BACKGROUND_SPACE {' '};
+#endif
+    
+    static constexpr char EMPTY_SPACE {' '};   // ░
 };

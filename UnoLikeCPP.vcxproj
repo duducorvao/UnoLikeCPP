@@ -887,6 +887,7 @@
     <ClInclude Include="Headers\Config.h" />
     <ClInclude Include="Headers\GameConsole.h" />
     <ClInclude Include="Headers\GameController.h" />
+    <ClInclude Include="Headers\IGameEvents.h" />
     <ClInclude Include="Headers\JumpCard.h" />
     <ClInclude Include="Headers\NumberCard.h" />
     <ClInclude Include="Headers\Player.h" />

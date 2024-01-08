@@ -10,9 +10,17 @@ class Player
     
 public:
     Player(std::string name);
-    void Play();
     void SetHand(const std::vector<std::shared_ptr<Card>>& cards);
+    void AddCardsToHand(const std::vector<std::shared_ptr<Card>>& cards);
+    void RemoveCardFromHand(int card_index);
+    void SetHasSaidUno(bool has_said);
+    
+    std::vector<std::shared_ptr<Card>> GetMatchingCards(const std::shared_ptr<Card>& card);
+    std::shared_ptr<Card> GetCardAt(int index);
     const std::string& GetName() const;
+    int GetHandSize() const;
+    bool CanSayUno();
+    bool GetHasSaidUno() const;
     void PrintHand() const;
     
 private:
