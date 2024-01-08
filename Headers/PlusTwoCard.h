@@ -1,11 +1,10 @@
 ﻿#pragma once
 #include "Card.h"
-#include <memory>
 
 class PlusTwoCard : public Card
 {
 public:
     PlusTwoCard(ECardColor card_color);
-    void OnPlaceAction() override;
-    void OnTurnBeginAction() override;
+    bool CheckPlaceCondition(const std::shared_ptr<Card>& other_card) override;
+    void OnPlaceAction(ICardActionHandler* handler) override;
 };

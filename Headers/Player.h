@@ -15,7 +15,8 @@ public:
     void RemoveCardFromHand(int card_index);
     void SetHasSaidUno(bool has_said);
     
-    std::vector<std::shared_ptr<Card>> GetMatchingCards(const std::shared_ptr<Card>& card);
+    std::vector<std::shared_ptr<Card>> GetHandMatchingCards(const std::shared_ptr<Card>& card) const;
+    std::vector<std::shared_ptr<Card>> GetPlaceMatchingCards(const std::shared_ptr<Card>& card) const;
     std::shared_ptr<Card> GetCardAt(int index);
     const std::string& GetName() const;
     int GetHandSize() const;

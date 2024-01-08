@@ -46,7 +46,7 @@ void GameConsole::ClearScreen()
 #endif
 }
 
-void GameConsole::WaitForAnyInput(const std::string& message)
+void GameConsole::WaitForEnterInput(const std::string& message)
 {
     std::cout << message;
     std::cin.clear();
@@ -54,7 +54,7 @@ void GameConsole::WaitForAnyInput(const std::string& message)
     std::cin.get();
 }
 
-void GameConsole::WaitForAnyInput()
+void GameConsole::WaitForEnterInput()
 {
-    WaitForAnyInput("Press ENTER to continue...");
+    WaitForEnterInput("Press ENTER to continue...");
 }

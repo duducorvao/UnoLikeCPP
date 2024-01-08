@@ -1,4 +1,6 @@
 ﻿#include "../Headers/JumpCard.h"
+#include "../Headers/GameConsole.h"
+#include "../Headers/ICardActionHandler.h"
 
 JumpCard::JumpCard(const ECardColor card_color)
 {
@@ -10,10 +12,9 @@ JumpCard::JumpCard(const ECardColor card_color)
     CalculateCardSize();
 }
 
-void JumpCard::OnPlaceAction()
+void JumpCard::OnPlaceAction(ICardActionHandler* handler)
 {
-}
-
-void JumpCard::OnTurnBeginAction()
-{
+    GameConsole::PrintWarn("Jump Card activated!!! The next player will be skipped. \n");
+    GameConsole::WaitForEnterInput();
+    handler->HandleJumpCardPlaceAction();
 }

@@ -6,15 +6,9 @@
 
 #include "../Headers/GameConsole.h"
 
-void TableController::Initialize()
-{
-    //Stub method for possible later use
-}
-
 void TableController::SetupTable()
 {
     CreateCards();
-    CreateDeck();
     ShuffleDeck();
     DrawFirstCard();
 }
@@ -27,23 +21,17 @@ void TableController::CreateCards()
         {
             for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
             {
-                card_pool_.emplace_back(card_factory_->MakeCardNumber(i, element));
+                deck_.emplace_back(card_factory_->MakeCardNumber(i, element));
             }
         }
-
-        // Disabling special cards for testing purposes
-        // for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
-        // {
-        //     card_pool_.emplace_back(card_factory_->MakeCardPlusTwo(element));
-        //     card_pool_.emplace_back(card_factory_->MakeCardReverse(element));
-        //     card_pool_.emplace_back(card_factory_->MakeCardJump(element));
-        // }    
+        
+        for (int j = 0; j < Config::CARDS_NUMBER_AMOUNT_PER_COLOR; ++j)
+        {
+            deck_.emplace_back(card_factory_->MakeCardPlusTwo(element));
+            deck_.emplace_back(card_factory_->MakeCardReverse(element));
+            deck_.emplace_back(card_factory_->MakeCardJump(element));
+        }    
     }
-}
-
-void TableController::CreateDeck()
-{
-    deck_ = card_pool_;
 }
 
 void TableController::ShuffleDeck()
@@ -73,7 +61,7 @@ std::vector<std::shared_ptr<Card>> TableController::BuyCards(unsigned int amount
     std::vector<std::shared_ptr<Card>> draw_cards;
     draw_cards.reserve(amount);
     
-    for (int i = 0; i < amount; ++i)
+    for (unsigned int i = 0; i < amount; ++i)
     {
         draw_cards.emplace_back(deck_.front());
         deck_.erase(deck_.begin());

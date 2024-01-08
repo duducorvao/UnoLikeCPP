@@ -32,13 +32,3 @@ bool NumberCard::CheckUseCondition(const std::shared_ptr<Card>& other_card)
 
     return color_match || number_match;
 }
-
-void NumberCard::OnPlaceAction()
-{
-    
-}
-
-void NumberCard::OnTurnBeginAction()
-{
-    
-}

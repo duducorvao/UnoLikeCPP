@@ -1,6 +1,7 @@
-﻿#include <sstream>
-#include "../Headers/Card.h"
+﻿#include "../Headers/Card.h"
 #include "../Headers/Config.h"
+#include "../Headers/ICardActionHandler.h"
+#include <sstream>
 
 Card::Card(ECardColor card_color, ECardType card_type) : card_color_(card_color), card_type_(card_type)
 {
@@ -26,6 +27,17 @@ bool Card::CheckUseCondition(const std::shared_ptr<Card>& other_card)
     const bool color_match = other_card->GetCardColor() == card_color_;
     const bool type_match = other_card->GetCardType() == card_type_;
     return color_match || type_match;
+}
+
+bool Card::CheckPlaceCondition(const std::shared_ptr<Card>& other_card)
+{
+    // Check if this card can receive the other_card on top of it.
+    // The default behaviour is to be the same as the UseCondition
+    return CheckUseCondition(other_card);
+}
+
+void Card::OnPlaceAction(ICardActionHandler* handler)
+{
 }
 
 std::string Card::GetFullCardImage() const
