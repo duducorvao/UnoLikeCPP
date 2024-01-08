@@ -1,8 +1,9 @@
 ﻿#pragma once
+#include "ICardAction.h"
 #include <string>
 #include <memory>
 
-class Card
+class Card : public ICardAction
 {
 public:
     
@@ -39,15 +40,15 @@ public:
     };
 
     Card() = default;
-    virtual ~Card() = default;
+    ~Card() override = default;
     Card(ECardColor card_color, ECardType card_type);
     ECardColor GetCardColor() const;
     ECardType GetCardType() const;
     const std::string& GetUsageRule() const;
 
     virtual bool CheckUseCondition(const std::shared_ptr<Card>& other_card);
-    virtual void OnPlaceAction() = 0;
-    virtual void OnTurnBeginAction() = 0;
+    virtual bool CheckPlaceCondition(const std::shared_ptr<Card>& other_card);
+    void OnPlaceAction(ICardActionHandler* handler) override;
 
     std::string GetFullCardImage() const;
     std::string GetCardViewName();
@@ -57,9 +58,9 @@ public:
     std::string GetCardBotSection() const;
     std::string GetCardIndexOptionSection(int index) const;
     void CalculateCardSize();
-    
+
     std::string GetCardViewColor() const;
-    
+
 protected:
     ECardColor card_color_ {ECardColor::Blue};
     ECardType card_type_  {ECardType::Number};

@@ -107,13 +107,28 @@ void Player::PrintHand() const
     GameConsole::PrintLine();
 }
 
-std::vector<std::shared_ptr<Card>> Player::GetMatchingCards(const std::shared_ptr<Card>& card)
+std::vector<std::shared_ptr<Card>> Player::GetHandMatchingCards(const std::shared_ptr<Card>& card) const
 {
     std::vector<std::shared_ptr<Card>> matching_cards;
 
     for (const auto& hand_card : hand_)
     {
-        if (card->CheckUseCondition(hand_card))
+        if (hand_card->CheckUseCondition(card))
+        {
+            matching_cards.emplace_back(hand_card);
+        }
+    }
+
+    return matching_cards;
+}
+
+std::vector<std::shared_ptr<Card>> Player::GetPlaceMatchingCards(const std::shared_ptr<Card>& card) const
+{
+    std::vector<std::shared_ptr<Card>> matching_cards;
+
+    for (const auto& hand_card : hand_)
+    {
+        if (card->CheckPlaceCondition(hand_card))
         {
             matching_cards.emplace_back(hand_card);
         }

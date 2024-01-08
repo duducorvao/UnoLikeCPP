@@ -25,6 +25,7 @@ public:
     static constexpr char CONSOLE_NORMAL_COLOR[] = "\033[0m";
     static constexpr char CONSOLE_ERROR_COLOR[] = "\033[31m";
     static constexpr char CONSOLE_WARNING_COLOR[] = "\033[33m";
+    static constexpr char CURRENT_PLAYER_COLOR[] = "\033[33m";
 
     // Card ASCII
     static constexpr size_t CARD_MIN_WIDTH {9};
@@ -42,5 +43,5 @@ public:
     static constexpr char CARD_BACKGROUND_SPACE {' '};
 #endif
     
-    static constexpr char EMPTY_SPACE {' '};   // ░
+    static constexpr char EMPTY_SPACE {' '};
 };

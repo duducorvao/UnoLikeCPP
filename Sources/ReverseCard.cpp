@@ -1,4 +1,6 @@
 ﻿#include "../Headers/ReverseCard.h"
+#include "../Headers/ICardActionHandler.h"
+#include "../Headers/GameConsole.h"
 
 ReverseCard::ReverseCard(const ECardColor card_color)
 {
@@ -10,10 +12,9 @@ ReverseCard::ReverseCard(const ECardColor card_color)
     CalculateCardSize();
 }
 
-void ReverseCard::OnPlaceAction()
+void ReverseCard::OnPlaceAction(ICardActionHandler* handler)
 {
-}
-
-void ReverseCard::OnTurnBeginAction()
-{
+    GameConsole::PrintWarn("Reverse Card activated!!! The players' order will change. \n");
+    GameConsole::WaitForEnterInput();
+    handler->HandleReverseCardPlaceAction();
 }

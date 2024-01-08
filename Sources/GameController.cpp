@@ -7,7 +7,7 @@
 void GameController::Initialize()
 {
     table_controller_ = std::make_shared<TableController>();
-    turns_controller_ = std::make_shared<TurnsController>(shared_from_this());
+    turns_controller_ = std::make_unique<TurnsController>(shared_from_this());
 }
 
 void GameController::Play()
@@ -26,7 +26,6 @@ void GameController::SetupGame() const
 
 void GameController::SetupCards() const
 {
-    table_controller_->Initialize();
     table_controller_->SetupTable();
 }
 

@@ -1,17 +1,15 @@
 ﻿#include "../Headers/TurnsController.h"
-
 #include "../Headers/GameConsole.h"
 #include "../Headers/Player.h"
+#include "../Headers/Config.h"
+#include "../Headers/IGameEvents.h"
+#include "../Headers/TableController.h"
 #include <algorithm>
 #include <chrono>
 #include <random>
 #include <sstream>
 
-#include "../Headers/Config.h"
-#include "../Headers/IGameEvents.h"
-#include "../Headers/TableController.h"
-
-#define MOD_ARITH(a, n) ((((a) % (n)) + (n)) % (n)) // ((a & n) + n) % n
+#define MOD_ARITH(a, n) ((((a) % (n)) + (n)) % (n)) // ((a % n) + n) % n
 
 TurnsController::TurnsController(const std::shared_ptr<IGameEvents>& game_events_handler) : game_events_handler_(game_events_handler)
 {
@@ -28,10 +26,20 @@ void TurnsController::SetupTurns(std::vector<std::shared_ptr<Player>> players)
     players_amount_ = players_.size();
     
     ShufflePlayers();
-    current_player = *players_.begin();
+    current_player_ = *players_.begin();
 }
 
-void TurnsController::PlayTurn() const
+std::shared_ptr<Card> TurnsController::PlayChosenCard(const int option) const
+{
+    const int chosen_card_index = option - 1;
+    auto chosen_card = current_player_->GetCardAt(chosen_card_index);
+    table_controller_->PlaceCard(chosen_card);
+    
+    current_player_->RemoveCardFromHand(chosen_card_index);
+    return chosen_card;
+}
+
+void TurnsController::PlayTurn()
 {
     GameConsole::ClearScreen();
     GameConsole::PrintLine("----- New Turn -----");
@@ -39,48 +47,44 @@ void TurnsController::PlayTurn() const
     table_controller_->PrintTopCard();
     const std::weak_ptr<Card> top_card = table_controller_->GetTopCard();
     const std::shared_ptr<Card> top_card_shared = top_card.lock();
+
+    PrintPlayersOrder();
+    GameConsole::PrintLine(current_player_->GetName() + "'s turn:");
     
-    top_card_shared->OnTurnBeginAction();
+    current_player_->PrintHand();
     
-    GameConsole::PrintLine(current_player->GetName() + "'s turn:");
+    CheckForPlusTwoCardBuying(top_card_shared);
     
-    current_player->PrintHand();
-    
-    const auto matching_cards = current_player->GetMatchingCards(top_card_shared);
+    const auto matching_cards = current_player_->GetHandMatchingCards(top_card_shared);
     if (matching_cards.empty())
     {
-        // Force player to buy cards if they doesn't have any matching one.
-        ForcePlayerToBuyCards("Player " + current_player->GetName() + " doesn't have a card that can be used", 1);
+        // If the player still doesn't have a matching card, buy a card and skip;
+        ForcePlayerToBuyCards("Player " + current_player_->GetName() + " doesn't have a card that can be used", 1);
         return;
     }
     
-    if(current_player->GetHandSize() == 1)
+    if(current_player_->GetHandSize() == 1)
     {
-        if(!current_player->GetHasSaidUno())
+        if(!current_player_->GetHasSaidUno())
         {
             // As a penalty for not yelling UNO, the player must buy new cards
             ForcePlayerToBuyCards(
-                "Player " + current_player->GetName() + " didn't yell UNO. Buying " +
+                "Player " + current_player_->GetName() + " didn't yell UNO. Buying " +
                 std::to_string(Config::YELL_UNO_PENALTY_CARDS) + " cards.", Config::YELL_UNO_PENALTY_CARDS);
             return;
         }
     }
 
     const int option = GetPlayerOption(top_card_shared);
-    
-    const int chosen_card_index = option - 1;
-    const auto chosen_card = current_player->GetCardAt(chosen_card_index);
-    table_controller_->PlaceCard(chosen_card);
-    
-    current_player->RemoveCardFromHand(chosen_card_index);
+    const auto chosen_card = PlayChosenCard(option);
 
-    if (current_player->GetHandSize() == 0)
+    if (current_player_->GetHandSize() == 0)
     {
-        GameConsole::PrintLine("Player " + current_player->GetName() + " win!!!");
+        GameConsole::PrintLine("Player " + current_player_->GetName() + " win!!!");
         game_events_handler_->EndGame();
     }
 
-    chosen_card->OnPlaceAction();
+    chosen_card->OnPlaceAction(this);
 }
 
 void TurnsController::NextTurn()
@@ -90,10 +94,14 @@ void TurnsController::NextTurn()
 
 void TurnsController::NextPlayer()
 {
-    int direction;
-    play_order_ == EPlayOrder::Clockwise ? direction = 1 : direction = -1;
-    current_player_index_ = MOD_ARITH((current_player_index_ + direction), players_amount_);
-    current_player = players_.at(current_player_index_);
+    SetNextPlayerIndex();
+    current_player_ = players_.at(current_player_index_);
+}
+
+void TurnsController::SetNextPlayerIndex()
+{
+    const int direction = static_cast<int>(play_order_);
+    current_player_index_ = MOD_ARITH((static_cast<int>(current_player_index_) + direction), static_cast<int>(players_amount_));
 }
 
 void TurnsController::ShufflePlayers()
@@ -107,14 +115,48 @@ void TurnsController::SetOrder(EPlayOrder order)
     play_order_ = order;
 }
 
+void TurnsController::PrintPlayersOrder() const
+{
+    GameConsole::Print("Player's Order: ");
+    for (size_t i = 0; i < players_.size(); ++i)
+    {
+        i == current_player_index_
+            ? GameConsole::SetColor(Config::CURRENT_PLAYER_COLOR)
+            : GameConsole::SetColor(Config::CONSOLE_NORMAL_COLOR);
+
+        GameConsole::Print(players_.at(i)->GetName() + " ");
+    }
+
+    GameConsole::SetColor(Config::CONSOLE_NORMAL_COLOR);
+    GameConsole::PrintLine();
+}
+
+void TurnsController::CheckForPlusTwoCardBuying(const std::shared_ptr<Card> top_card_shared)
+{
+    // force_buy_card_amount_ being 0, means that this was the card flipped in the game's beginning.
+    if (top_card_shared->GetCardType() == Card::ECardType::PlusTwo && force_buy_card_amount_ > 0)
+    {
+        const auto place_matching_cards = current_player_->GetPlaceMatchingCards(top_card_shared);
+        if (place_matching_cards.empty())
+        {
+            // If the top card is a +2 and the player doesn't have another +2 to play, it will be forced to buy cards.
+            ForcePlayerToBuyCards(
+                "Player " + current_player_->GetName() + " must buy " + std::to_string(force_buy_card_amount_) +
+                " cards", force_buy_card_amount_);
+
+            force_buy_card_amount_ = 0;
+        }
+    }
+}
+
 int TurnsController::GetPlayerOption(const std::shared_ptr<Card>& top_card_shared) const
 {
     int option;
-    const int player_hand_size = current_player->GetHandSize();
+    const int player_hand_size = current_player_->GetHandSize();
     do
     {
-        const bool player_can_say_uno = current_player->CanSayUno();
-        const bool player_has_said_uno = current_player->GetHasSaidUno();
+        const bool player_can_say_uno = current_player_->CanSayUno();
+        const bool player_has_said_uno = current_player_->GetHasSaidUno();
         
         std::ostringstream oss;
         oss << "Choose a card to play using the indexes above";
@@ -123,14 +165,14 @@ int TurnsController::GetPlayerOption(const std::shared_ptr<Card>& top_card_share
         option = GameConsole::Read<int>(oss.str());
         if (!player_has_said_uno)
         {
-            current_player->SetHasSaidUno(player_can_say_uno && option == 0);
+            current_player_->SetHasSaidUno(player_can_say_uno && option == 0);
         }
         
         if (option > 0 && option <= player_hand_size )
         {
-            const auto chosen_card = current_player->GetCardAt(option - 1);
+            const auto chosen_card = current_player_->GetCardAt(option - 1);
             
-            if(!chosen_card->CheckUseCondition(top_card_shared))
+            if(!top_card_shared->CheckUseCondition(chosen_card))
             {
                 option = 0; // To reset this block
                 GameConsole::PrintWarn(chosen_card->GetUsageRule());
@@ -145,12 +187,12 @@ int TurnsController::GetPlayerOption(const std::shared_ptr<Card>& top_card_share
 void TurnsController::ForcePlayerToBuyCards(const std::string& message, int amount) const
 {
     GameConsole::PrintWarn(message);
-    GameConsole::WaitForAnyInput("Press ENTER to buy...");
+    GameConsole::WaitForEnterInput("Press ENTER to buy...");
 
-    current_player->AddCardsToHand(table_controller_->BuyCards(amount));
-    current_player->PrintHand();
+    current_player_->AddCardsToHand(table_controller_->BuyCards(amount));
+    current_player_->PrintHand();
     
-    GameConsole::WaitForAnyInput("Press ENTER to continue...");
+    GameConsole::WaitForEnterInput("Press ENTER to continue...");
 }
 
 const std::vector<std::shared_ptr<Player>>& TurnsController::GetPlayers()
@@ -160,5 +202,21 @@ const std::vector<std::shared_ptr<Player>>& TurnsController::GetPlayers()
 
 const std::shared_ptr<Player>& TurnsController::GetCurrentPlayer() const
 {
-    return current_player;
+    return current_player_;
+}
+
+void TurnsController::HandleReverseCardPlaceAction()
+{
+    int next_order = static_cast<int>(play_order_) * -1; 
+    SetOrder(static_cast<EPlayOrder>(next_order));
+}
+
+void TurnsController::HandleJumpCardPlaceAction()
+{
+    SetNextPlayerIndex();
+}
+
+void TurnsController::HandlePlusTwoPlaceAction()
+{
+    force_buy_card_amount_ += 2;
 }

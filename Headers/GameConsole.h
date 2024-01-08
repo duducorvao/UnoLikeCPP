@@ -10,8 +10,8 @@ public:
     static void PrintErr(const std::string& message);
     static void PrintWarn(const std::string& message);
     static void SetColor(const std::string& color);
-    static void WaitForAnyInput(const std::string& message);
-    static void WaitForAnyInput();
+    static void WaitForEnterInput(const std::string& message);
+    static void WaitForEnterInput();
     static void ClearScreen();
 
     template<typename T>
