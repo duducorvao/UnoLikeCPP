@@ -29,7 +29,7 @@ public:
     void ShufflePlayers();
     void SetOrder(EPlayOrder order);
     void PrintPlayersOrder() const;
-    void CheckForPlusTwoCardBuying(std::shared_ptr<Card> top_card_shared);
+    void CheckForPlusTwoCardBuying(const std::shared_ptr<Card>& top_card_shared);
     std::shared_ptr<Card> PlayChosenCard(int option) const;
     int GetPlayerOption(const std::shared_ptr<Card>& top_card_shared) const;
     void ForcePlayerToBuyCards(const std::string& message, int amount) const;

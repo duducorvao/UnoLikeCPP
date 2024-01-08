@@ -131,7 +131,7 @@ void TurnsController::PrintPlayersOrder() const
     GameConsole::PrintLine();
 }
 
-void TurnsController::CheckForPlusTwoCardBuying(const std::shared_ptr<Card> top_card_shared)
+void TurnsController::CheckForPlusTwoCardBuying(const std::shared_ptr<Card>& top_card_shared)
 {
     // force_buy_card_amount_ being 0, means that this was the card flipped in the game's beginning.
     if (top_card_shared->GetCardType() == Card::ECardType::PlusTwo && force_buy_card_amount_ > 0)
