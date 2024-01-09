@@ -1,101 +1,239 @@
 ﻿@startuml
 'https://plantuml.com/class-diagram
 
-class GameController {
-- table_controller : unique_ptr<TableController>
-- turn_controller : unique_ptr<TurnsController>
-
+class GameController implements IGameEvents {
++ Play() : void
 + Initialize() : void
-+ SetupGame() : void
-+ SetupPlayers() : void
-+ StartGame(): void
+
+- table_controller_ : shared_ptr<TableController>
+- turn_controller_ : unique_ptr<TurnsController>
+- is_playing_ : bool
+
+- SetupGame() const : void
+- SetupCards() const : void
+- SetupPlayers() const : void
+- GameLoop() const: void
+- EndGame() override : void
 }
 
-class TableController{
-- deck : vector<weak_ptr<Card>>
-- discard : vector<weak_ptr<Card>>
-- card_factory : unique_ptr<CardFactory>
-- card_pool: vector<unique_ptr<Card>>
-
-+ Initialize() : void
+class TableController {
 + SetupTable() : void
 + CreateCards() : void
 + ShuffleDeck() : void
-+ ValidateCard(weak_ptr<Card>) : bool
-+ PlayCard(shared_ptr<Card>) : void
-+ BuyCards(int amount) : vector<shared_ptr<Card>
++ DrawFirstCard() : void
++ PlaceCard(shared_ptr<Card>& card) : void
++ BuyCards(unsigned int amount) : vector<shared_ptr<Card>
++ GetTopCard() const : weak_ptr<Card>
++ PrintTopCard() const : void
+- RecycleCards() : void
+
+- deck_ : vector<shared_ptr<Card>>
+- discard_ : vector<shared_ptr<Card>>
+- card_factory_ : unique_ptr<CardFactory>
 }
 
-class TurnsController{
-- play_order : EPlayOrder
-- players : vector<shared_ptr<Player>>
-- current_player : shared_ptr<Player>
-
-+ Initialize(vector<shared_ptr<Player>> players) : void
-+ SetupTurns() : void
+class TurnsController implements ICardActionHandler {
++ TurnsController(shared_ptr<IGameEvents>& game_events_handler)
++ Initialize(shared_ptr<TableController>& table_controller) : void
++ SetupTurns(vector<shared_ptr<Player>> players) : void
++ PlayTurn() : void
 + NextTurn() : void
++ NextPlayer() : void
++ SetNextPlayerIndex() : void
 + ShufflePlayers() : void
-+ GetPlayers() : vector<shared_ptr<Player>>
-+ SetOrder(PlayOrder) : void
++ SetOrder(EPlayOrder order) : void
++ PrintPlayersOrder() const : void
++ CheckForPlusTwoCardBuying(const shared_ptr<Card>& top_card_shared) : void
++ PlayChosenCard(int option) const : std::shared_ptr<Card>
++ GetPlayerOption(const shared_ptr<Card>& top_card_shared) const: int
++ ForcePlayerToBuyCards(const string& message, int amount) const : void
++ GetPlayers() : const vector<shared_ptr<Player>>&
++ GetCurrentPlayer() const : const shared_ptr<Player>&
+
++ HandleReverseCardPlaceAction() override : void
++ HandleJumpCardPlaceAction() override : void
++ HandlePlusTwoPlaceAction() override : void
+
+- game_events_handler_ : shared_ptr<IGameEvents>
+- table_controller_ : shared_ptr<TableController>
+- play_order_ : EPlayOrder
+- players_ : vector<shared_ptr<Player>>
+- current_player_ : shared_ptr<Player>
+- current_player_index_ : size_t
+- force_buy_card_amount_ : int
 }
 
-class Player{
-- can_say_uno : bool
-- has_said_uno : bool
-- Hand : vector<shared_ptr<Card>>
+abstract Card implements ICardAction {
++ Card(ECardColor card_color, ECardType card_type)
++ GetCardColor() const : ECardColor
++ GetCardType() const : ECardType
++ GetUsageRule() const : const string&
 
-+ SetHand(vector<shared_ptr<Card>) : void
++ {abstract} CheckUseCondition(const shared_ptr<Card>& other_card) : bool
++ {abstract} CheckPlaceCondition(const shared_ptr<Card>& other_card) : bool
++ OnPlaceAction(ICardActionHandler* handler) override : void
+
++ GetFullCardImage() const : string
++ GetCardViewName() : string
++ GetCardTopSection() const : string
++ GetCardEmptySection() const : string
++ GetCardNameSection() const : string
++ GetCardBotSection() const : string
++ GetCardIndexOptionSection(int index) const : string
++ CalculateCardSize() : void
+
++ {static} card_color_list : constexpr ECardColor[]
++ {static} card_type_list : constexpr ECardType[]
+
+- card_color_ : ECardColor
+- card_type_ : ECardType
+- view_name_ : string
+- usage_rule_ : string
+- card_internal_size_ : size_t
+}
+
+class NumberCard extends Card {
++ NumberCard(int number, ECardColor card_color)
++ GetNumber() const : int
++ CheckUseCondition(const shared_ptr<Card>& other_card) override : bool
+
+- number_ : int
+}
+
+class PlusTwoCard extends Card {
++ PlusTwoCard(ECardColor card_color)
++ CheckPlaceCondition(const shared_ptr<Card>& other_card) override : bool
++ OnPlaceAction(ICardActionHandler* handler) override : void
+}
+
+class ReverseCard extends Card {
++ ReverseCard(ECardColor card_color)
++ OnPlaceAction(ICardActionHandler* handler) override : void
+}
+
+class JumpCard extends Card {
++ JumpCard(ECardColor card_color)
++ OnPlaceAction(ICardActionHandler* handler) override : void
 }
 
 class CardFactory{
-+ MakeCard(ECardType card_type): shared_ptr<Card>
++ MakeCardNumber(int number, ECardColor color) : std::shared_ptr<Card>
++ MakeCardPlusTwo(ECardColor color) : std::shared_ptr<Card>
++ MakeCardReverse(ECardColor color) : std::shared_ptr<Card>
++ MakeCardJump(ECardColor color) : std::shared_ptr<Card>
 }
 
-abstract Card{
-- card_color : ECardColor
-- card_type : ECardType
-- use_condition : UseCondition
-- action : Action
+class Player{
++ Player(string name)
++ SetHand(const vector<shared_ptr<Card>>& cards) : void
++ AddCardsToHand(const vector<shared_ptr<Card>>& cards) : void
++ RemoveCardFromHand(int card_index) : void
++ SetHasSaidUno(bool has_said) : void
++ GetHandMatchingCards(const shared_ptr<Card>& card) const : vector<shared_ptr<Card>>
++ GetPlaceMatchingCards(const shared_ptr<Card>& card) const : vector<shared_ptr<Card>>
++ GetCardAt(int index): shared_ptr<Card>
++ GetName() const : const string&
++ GetHandSize() const : int
++ CanSayUno() : bool
++ GetHasSaidUno() const : bool
++ PrintHand() const : void
+
+- name : string
+- can_say_uno_ : bool
+- has_said_uno_ : bool
+- hand_ : vector<shared_ptr<Card>>
 }
 
-class NumberCard extends Card{
+interface IGameEvents {
++ {abstract} EndGame() = 0 : void
 }
 
-class PlusTwoCard extends Card{
+interface ICardAction {
++ {abstract} OnPlaceAction(ICardActionHandler* handler) = 0 : void
 }
 
-class ReverseCard extends Card{
+interface ICardActionHandler {
++ {abstract} HandleReverseCardPlaceAction() = 0 : void
++ {abstract} HandleJumpCardPlaceAction() = 0 : void
++ {abstract} HandlePlusTwoPlaceAction() = 0 : void
 }
 
-class JumpCard extends Card{
+class Config {
++ {static} PLAYERS_MIN_AMOUNT : constexpr int
++ {static} PLAYERS_MAX_AMOUNT : constexpr int
++ {static} PLAYERS_HAND_SIZE : constexpr int
++ {static} PLAYERS_HAND_SIZE_TO_SAY_UNO : constexpr int
++ {static} YELL_UNO_PENALTY_CARDS : constexpr int
+
++ {static} CARDS_NUMBER_TOTAL : constexpr int
++ {static} CARDS_PLUS_TWO_TOTAL : constexpr int
++ {static} CARDS_REVERSE_TOTAL : constexpr int
++ {static} CARDS_JUMP_TOTAL : constexpr int
++ {static} CARDS_TOTAL : constexpr int
++ {static} CARDS_NUMBER_AMOUNT_PER_COLOR : constexpr int
++ {static} NUMBERS : constexpr int[]
+
++ {static} CARD_BLUE_COLOR : constexpr char[]
++ {static} CARD_YELLOW_COLOR : constexpr char[]
++ {static} CARD_RED_COLOR : constexpr char[]
++ {static} CARD_GREEN_COLOR : constexpr char[]
++ {static} CONSOLE_NORMAL_COLOR : constexpr char[]
++ {static} CONSOLE_ERROR_COLOR : constexpr char[]
++ {static} CONSOLE_WARNING_COLOR : constexpr char[]
++ {static} CURRENT_PLAYER_COLOR : constexpr char[]
+
++ {static} CARD_MIN_WIDTH : constexpr size_t
++ {static} CARD_SAFE_WIDTH_SPACE : constexpr size_t
++ {static} CARD_HORIZONTAL_BORDER : constexpr char
++ {static} CARD_VERTICAL_BORDER : constexpr char
++ {static} CARD_TOP_LEFT_CORNER : constexpr char
++ {static} CARD_TOP_RIGHT_CORNER : constexpr char
++ {static} CARD_BOT_LEFT_CORNER : constexpr char
++ {static} CARD_BOT_RIGHT_CORNER : constexpr char
++ {static} CARD_BACKGROUND_SPACE : constexpr char
++ {static} EMPTY_SPACE : constexpr char
+}
+
+class GameConsole {
++ {static} Print(const string& message) : void
++ {static} PrintLine(const string& message) : void
++ {static} PrintLine() : void
++ {static} PrintErr(const string& message) : void
++ {static} PrintWarn(const string& message) : void
++ {static} SetColor(const string& color) : void
++ {static} WaitForEnterInput(const string& message) : void
++ {static} WaitForEnterInput() : void
++ {static} ClearScreen() : void
++ {static} Read(const string& message) : T
 }
 
 enum ECardColor {
-kBlue
-kYellow
-KRed
-KGreen
+Blue
+Yellow
+Red
+Green
 }
 
 enum ECardType {
-number
-plusTwo
-reverse
-jump
+Number
+PlusTwo
+Reverse
+Jump
 }
 
 enum EPlayOrder{
-kClockwise
-kAnticlockwise
+Clockwise
+Anticlockwise
 }
 
 GameController -- TableController
-GameController -- TurnsController
+GameController - TurnsController
 
 TableController -- CardFactory
+TableController - Card
 
-TurnsController -- EPlayOrder
-TurnsController -- Player
+TurnsController - EPlayOrder
+TurnsController - Player
 
 Card -> ECardColor
 ECardType <- Card

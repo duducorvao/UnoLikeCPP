@@ -1,19 +1,25 @@
 ﻿#pragma once
+#include "TableController.h"
+#include "TurnsController.h"
+#include "IGameEvents.h"
 #include <memory>
-#include "../Headers/TableController.h"
-#include "../Headers/TurnsController.h"
 
-class GameController
+class GameController : public IGameEvents, public std::enable_shared_from_this<GameController>
 {
-private:
-    std::unique_ptr<TableController> table_controller_;
-    std::unique_ptr<TurnsController> turns_controller_;
-
 public:
-    GameController();
-    void Initialize();
+    GameController() = default;
     void Play();
-    void SetupGame();
-    void SetupPlayers();
-    void StartGame();    
+    void Initialize();
+    
+private:
+    std::shared_ptr<TableController> table_controller_;
+    std::unique_ptr<TurnsController> turns_controller_;
+    bool is_playing_ {false};
+    
+    void SetupGame() const;
+    void SetupCards() const;
+    void SetupPlayers() const;
+    void GameLoop() const;
+
+    void EndGame() override;
 };
