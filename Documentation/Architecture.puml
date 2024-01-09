@@ -227,12 +227,13 @@ Anticlockwise
 }
 
 GameController -- TableController
-GameController -- TurnsController
+GameController - TurnsController
 
 TableController -- CardFactory
+TableController - Card
 
-TurnsController -- EPlayOrder
-TurnsController -- Player
+TurnsController - EPlayOrder
+TurnsController - Player
 
 Card -> ECardColor
 ECardType <- Card
